@@ -1,0 +1,14 @@
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Test and cache artifacts
+.pytest_cache/
+.coverage
+coverage/
