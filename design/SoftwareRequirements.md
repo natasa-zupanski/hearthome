@@ -258,6 +258,15 @@ As a player, when I store a Cabinet that is placed on the grid, the Cabinet is r
 4. System removes Cabinet from (1,1). Tile (1,1) is now empty.
 5. System adds Cabinet to Player inventory under the furniture tab.
 
+#### 5.5.2 Valid - Store Furniture With Items on It
+As a player, when I store a Dresser that has items on its surface, the Dresser and all items on it are removed from the grid and added to my inventory.
+1. Room is a 4x4 grid. Dresser is at (1,1) and has a 2x2 surface.
+2. Plant is at (1,1) on the Dresser surface.
+3. Player stores Dresser.
+4. System removes Dresser from (1,1) on the room grid. Tile (1,1) is now empty.
+5. System adds Dresser to Player inventory under the furniture tab.
+6. System adds Plant to Player inventory under the items tab.
+
 ### 5.6 Place Item on Furniture Surface
 Note: Item placement on the room floor follows the same rules as furniture placement in section 5.3.
 
