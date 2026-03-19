@@ -1,7 +1,9 @@
 {
   "packageManager": "pnpm@10.29.3",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc"
   },
   "dependencies": {
     "react": "^19.2.0",
