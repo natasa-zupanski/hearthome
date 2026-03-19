@@ -256,5 +256,160 @@ As a player, when I store a Cabinet that is placed on the grid, the Cabinet is r
 2. Cabinet is at (1,1).
 3. Player stores Cabinet.
 4. System removes Cabinet from (1,1). Tile (1,1) is now empty.
-5. System adds Cabinet to Player inventory.
+5. System adds Cabinet to Player inventory under the furniture tab.
+
+### 5.6 Place Item on Furniture Surface
+Note: Item placement on the room floor follows the same rules as furniture placement in section 5.3.
+
+Note: Furniture with a surface tracks the height of that surface so it can be rendered correctly. This height is not necessarily the maximum height of the furniture (e.g. a couch seat is lower than its back). A piece of furniture may have multiple surfaces at different heights (e.g. stairs).
+
+Furniture to Test:
+- Dresser (2x2 rectangular surface grid)
+- Stairs (two surfaces: bottom step 2x1, top step 2x1)
+
+Items to Test:
+- Plant (1x1 footprint)
+- Tray (2x1 footprint, rotates to 1x2)
+
+Test Cases:
+- Place Plant (1x1) on empty tile (1,1) of Dresser surface -> Plant placed at (1,1) on surface
+- Place Tray (2x1) rotated to (1x2) at (1,1) on Dresser surface where (1,1) and (1,2) are empty -> Tray placed at (1,1)-(1,2)
+- Place Plant on occupied tile (1,1) of Dresser surface -> not placed, invalid
+- Place Plant at (3,1) outside Dresser 2x2 surface -> not placed, invalid
+- Place Tray (2x1) at (1,2) on Dresser surface where footprint extends to (2,2) outside surface -> not placed, invalid
+- Place Tray (2x1) rotated to (1x2) at (1,1) on Dresser surface where (1,2) is occupied -> not placed, invalid
+- Place Plant on bottom step surface of Stairs -> Plant placed on bottom step
+- Place Plant on top step surface of Stairs -> Plant placed on top step
+
+#### 5.6.1 Valid - Place Item on Surface
+As a player, when I place a Plant on an empty tile on a Dresser surface, the Plant is placed there.
+1. Dresser is placed in the room. Dresser has a 2x2 rectangular surface.
+2. Surface tile (1,1) is empty.
+3. Player places Plant at (1,1) on the Dresser surface.
+4. System places Plant at (1,1) on the Dresser surface.
+
+#### 5.6.2 Valid - Place Rotated Item on Surface
+As a player, when I rotate a Tray and place it where the rotated footprint fits on the surface, the Tray is placed there.
+1. Dresser is placed in the room. Dresser has a 2x2 rectangular surface.
+2. Surface tiles (1,1) and (1,2) are empty.
+3. Tray has a 2x1 footprint; player rotates it 90° making it 1x2.
+4. Player places Tray at (1,1) on the Dresser surface.
+5. System places Tray occupying (1,1) and (1,2) on the Dresser surface.
+
+#### 5.6.3 Invalid - Place Item on Occupied Surface Tile
+As a player, when I try to place a Plant on an occupied tile on the Dresser surface, the Plant is not placed.
+1. Dresser is placed in the room. Dresser has a 2x2 rectangular surface.
+2. Surface tile (1,1) is occupied by an existing item.
+3. Player attempts to place Plant at (1,1) on the Dresser surface.
+4. System does not place Plant.
+5. System displays that the placement is invalid.
+
+#### 5.6.4 Invalid - Place Item Outside Surface Boundary
+As a player, when I try to place a Plant outside the Dresser surface boundary, the Plant is not placed.
+1. Dresser is placed in the room. Dresser has a 2x2 rectangular surface.
+2. Player attempts to place Plant at (3,1) on the Dresser surface.
+3. System does not place Plant.
+4. System displays that the placement is invalid.
+
+#### 5.6.5 Invalid - Item Footprint Extends Outside Surface Boundary
+As a player, when I try to place a Tray where part of its footprint falls outside the surface boundary, the Tray is not placed.
+1. Dresser is placed in the room. Dresser has a 2x2 rectangular surface.
+2. Tray has a 2x1 footprint.
+3. Player attempts to place Tray at (1,2) on the Dresser surface, which would extend the footprint to (2,2) — outside the surface grid.
+4. System does not place Tray.
+5. System displays that the placement is invalid.
+
+#### 5.6.6 Invalid - Rotated Item Footprint Overlaps Occupied Surface Tile
+As a player, when I rotate a Tray and try to place it where the rotated footprint overlaps an occupied surface tile, the Tray is not placed.
+1. Dresser is placed in the room. Dresser has a 2x2 rectangular surface.
+2. Surface tile (1,2) is occupied by an existing item.
+3. Tray has a 2x1 footprint; player rotates it 90° making it 1x2.
+4. Player attempts to place Tray at (1,1) on the Dresser surface, which would extend the rotated footprint to (1,2).
+5. System does not place Tray.
+6. System displays that the placement is invalid.
+
+#### 5.6.7 Valid - Place Item on One of Multiple Surfaces
+As a player, when I place items on each surface of a multi-surface piece of furniture, each item is placed independently on its respective surface.
+1. Stairs are placed in the room. Stairs have two surfaces: a bottom step (2x1) and a top step (2x1).
+2. Player places Plant on tile (1,1) of the bottom step surface.
+3. System places Plant at (1,1) on the bottom step surface.
+4. Player places Plant on tile (1,1) of the top step surface.
+5. System places Plant at (1,1) on the top step surface.
+
+### 5.7 Move Items (Edit Session)
+Note: Invalid drop cases (occupied tile, outside boundary, rotated footprint) follow the same rules as section 5.4. Confirm and cancel session behaviour is also the same as section 5.4.
+
+Furniture to Test:
+- Dresser A (2x2 surface)
+- Dresser B (2x2 surface)
+
+Items to Test:
+- Plant (1x1 footprint)
+
+Grid to Test:
+- 4x4 room
+
+Test Cases:
+- Move Plant from Dresser A surface (1,1) to empty Dresser A surface (2,2) -> Plant at (2,2) on Dresser A surface
+- Move Plant from Dresser A surface (1,1) to empty room floor tile (3,3) -> Plant at (3,3) on floor
+- Move Plant from room floor (1,1) to empty Dresser A surface (1,1) -> Plant at (1,1) on Dresser A surface
+- Move Plant from Dresser A surface (1,1) to empty Dresser B surface (1,1) -> Plant at (1,1) on Dresser B surface
+
+#### 5.7.1 Valid - Move Item Within Same Surface
+As a player, when I move a Plant to an empty tile on the same surface and confirm, the Plant is at the new position.
+1. Dresser A is placed in the room with a 2x2 surface.
+2. Plant is at (1,1) on Dresser A surface. Tile (2,2) is empty.
+3. Player moves Plant to (2,2) on Dresser A surface.
+4. System places Plant at (2,2). Tile (1,1) is now empty.
+5. Player confirms the edit session.
+6. System commits Plant at (2,2) on Dresser A surface.
+
+#### 5.7.2 Valid - Move Item from Surface to Floor
+As a player, when I move a Plant from a Dresser surface to an empty floor tile and confirm, the Plant is on the floor.
+1. Dresser A is placed in the room. Plant is at (1,1) on Dresser A surface.
+2. Room floor tile (3,3) is empty.
+3. Player moves Plant to floor tile (3,3).
+4. System places Plant at (3,3) on the room floor. Surface tile (1,1) is now empty.
+5. Player confirms the edit session.
+6. System commits Plant at (3,3) on the room floor.
+
+#### 5.7.3 Valid - Move Item from Floor to Surface
+As a player, when I move a Plant from the room floor to an empty surface tile and confirm, the Plant is on the surface.
+1. Dresser A is placed in the room with a 2x2 surface. Surface tile (1,1) is empty.
+2. Plant is at (3,3) on the room floor.
+3. Player moves Plant to (1,1) on Dresser A surface.
+4. System places Plant at (1,1) on Dresser A surface. Floor tile (3,3) is now empty.
+5. Player confirms the edit session.
+6. System commits Plant at (1,1) on Dresser A surface.
+
+#### 5.7.4 Valid - Move Item Between Two Furniture Surfaces
+As a player, when I move a Plant from one Dresser surface to another and confirm, the Plant is on the new surface.
+1. Dresser A and Dresser B are both placed in the room, each with a 2x2 surface.
+2. Plant is at (1,1) on Dresser A surface. Tile (1,1) on Dresser B surface is empty.
+3. Player moves Plant to (1,1) on Dresser B surface.
+4. System places Plant at (1,1) on Dresser B surface. Dresser A surface tile (1,1) is now empty.
+5. Player confirms the edit session.
+6. System commits Plant at (1,1) on Dresser B surface.
+
+### 5.8 Store Items
+Items to Test:
+- Plant (1x1 footprint)
+
+Test Cases:
+- Store Plant from Dresser surface (1,1) -> Plant in inventory items tab, surface tile (1,1) is empty
+- Store Plant from room floor (1,1) -> Plant in inventory items tab, floor tile (1,1) is empty
+
+#### 5.8.1 Valid - Store Item from Surface
+As a player, when I store a Plant that is placed on a Dresser surface, the Plant is removed from the surface and added to my inventory under the items tab.
+1. Dresser is placed in the room. Plant is at (1,1) on the Dresser surface.
+2. Player stores Plant.
+3. System removes Plant from (1,1) on the Dresser surface. Surface tile (1,1) is now empty.
+4. System adds Plant to Player inventory under the items tab.
+
+#### 5.8.2 Valid - Store Item from Floor
+As a player, when I store a Plant that is placed on the room floor, the Plant is removed from the floor and added to my inventory under the items tab.
+1. Plant is at (1,1) on the room floor.
+2. Player stores Plant.
+3. System removes Plant from (1,1) on the room floor. Floor tile (1,1) is now empty.
+4. System adds Plant to Player inventory under the items tab.
 
