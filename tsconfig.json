@@ -11,5 +11,5 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true
   },
-  "include": ["Hearthome/frontend/src", "Hearthome/tests"]
+  "include": ["Hearthome/frontend/src"]
 }
