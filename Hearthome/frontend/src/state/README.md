@@ -1,0 +1,3 @@
+# state/
+
+Global state management.
